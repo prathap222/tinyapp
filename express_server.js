@@ -2,7 +2,8 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 
 const urlDatabase = {
@@ -44,13 +45,13 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 //new url added to shown with all urls
-
 app.post("/urls", (req, res) => {
   const shortURL = generateShortURL();
   const newURL = req.body.longURL;
   urlDatabase[shortURL] = newURL;
   res.redirect(`/urls/${shortURL}`);         
 });
+
 // redirect to longRIL
 app.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
@@ -62,10 +63,18 @@ app.get("/u/:shortURL", (req, res) => {
     res.send('Does not exist');
   }
 });
+
 //post route that removes a url resource: POST
 app.post("/urls/:shortURL/delete",(req,res) => {
   const urlTodelete = req.params.shortURL;
   delete urlDatabase[urlTodelete];
+  res.redirect('/urls');
+});
+
+//post route that edits a url resource: POST
+app.post("/urls/:shortURL/edit",(req,res) => {
+  const urlToEdit = req.params.shortURL;
+  urlDatabase[urlToEdit] = req.body.longURL;
   res.redirect('/urls');
 });
 
