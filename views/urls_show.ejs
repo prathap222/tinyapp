@@ -22,6 +22,14 @@
         </p>
       </div>
       <div class="card-footer text-muted"></div>
+      <h5>Edit</h5>
+        <form method="POST" action="/urls/<%= shortURL %>/edit">
+          <p>New URL:
+            <input type="text" name="longURL">
+            <button class="btn-primary" type="submit" value="Submit">Submit</button>
+          </p>
+        </form>
+    </div>
     </div>
     <!-- Bootstrap JS -->
     <script
