@@ -120,12 +120,22 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
+  const {email, password} = req.body;
+  if (email === '') {
+    res.status(400).send('Email required');
+  } else if (password === '') {
+    res.status(400).send('Password required');
+  } else if (!getUserByEmail(email, users)) {
+    res.status(400).send('This email is already registered')
+  }
+
   newuser = adduser(req.body)
   res.cookie('user_id', newuser.id);
   res.redirect('/urls');
+  console.log(users);
 })
 
-//add user if available
+//add user if not available
 const adduser = newuser => {
   const userid = generateShortURL();
   newuser.id = userid;
@@ -133,6 +143,19 @@ const adduser = newuser => {
   return newuser
 }
 
+//this is to check if emails are registered
+const getUserByEmail = (email, userslist) => {
+  for (let user in userslist) {
+    console.log(`email inside for getUserByEmail: ${email}`)
+    console.log(`userslist in getUserByEmail: ${userslist}`)
+    console.log(`user in getUserByEmail: ${user}`)
+    console.log(`users[user]["email"]: ${users[user]["email"]}`)
+    if(users[user]["email"] === email) {
+      return false;
+    }
+  }
+  return true;
+}
 
 const generateRandomString = () => {
   const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
