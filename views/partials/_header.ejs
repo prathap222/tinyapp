@@ -19,14 +19,14 @@
       </div>
     </div>
     <div>
-      <% if (!username) {%>
+      <% if (!user_id) {%>
         <form method="POST" action="/login">
-          <input type="text" name="username" placeholder="Username" required>
+          <input type="text" name="user_id" placeholder="user_id" required>
           <button type="submit" class="btn btn-outline-dark">Login</button>
       </form>
       <% } else { %>
         <form method="POST" action="/logout">
-          <span> Logged in as: <%= username %> </span>
+          <span> Logged in as: <%= user_id %> </span>
           <button type="submit" class="btn btn-outline-dark">Logout</button>
         </form>
       <% } %>

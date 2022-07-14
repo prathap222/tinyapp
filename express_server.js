@@ -12,6 +12,23 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -25,12 +42,12 @@ app.get("/hello", (req, res) => {
 });
 // disply all urls to main page
 app.get("/urls", (req, res) => {
- let templateVars = { urls: urlDatabase, username: req.cookies['username']};
+ let templateVars = { urls: urlDatabase, user_id: req.cookies['user_id']};
   res.render("urls_index", templateVars);
 });
 // new url is created
 app.get("/urls/new", (req, res) => {
-  let templateVars = { username: req. cookies['username']}
+  let templateVars = { user_id: req. cookies['user_id']}
   res.render("urls_new", templateVars);
 });
 
@@ -39,7 +56,7 @@ app.get("/urls/:shortURL", (req, res) => {
   let shortURL = req.params.shortURL;
   if (verifyShortUrl(shortURL)) {
     let longURL = urlDatabase[req.params.shortURL];
-    let templateVars = { shortURL: shortURL, longURL: longURL , username: req.cookies['username']};
+    let templateVars = { shortURL: shortURL, longURL: longURL , user_id: req.cookies['user_id']};
     res.render("urls_show", templateVars);
   } else {
     res.send('does not exist');
@@ -83,29 +100,39 @@ app.post("/urls/:shortURL/edit",(req,res) => {
 
 //endpoint to login
 app.post("/login", (req, res) => {
-  if (req.body.username) {
-    const username = req.body.username;
-    res.cookie('username', username);
+  if (users[req.body.user_id]) {
+    const user_id = req.body.user_id;
+    res.cookie('user_id', user_id);
   }
   res.redirect('/urls');
 });
 
 //endpoint to logout
 app.post("/logout",(req,res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
-
 app.get("/register", (req, res) => {
-  templateVars = { username:req.cookies['username']}
+  templateVars = { user_id:req.cookies['user_id']}
   res.render("urls_register", templateVars);
+  res.redirect('/urls');
+});
+
+app.post("/register", (req, res) => {
+  newuser = adduser(req.body)
+  res.cookie('user_id', newuser.id);
   res.redirect('/urls');
 })
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
+//add user if available
+const adduser = newuser => {
+  const userid = generateShortURL();
+  newuser.id = userid;
+  users[newuser] = newuser;
+  return newuser
+}
+
 
 const generateRandomString = () => {
   const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
