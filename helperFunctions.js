@@ -23,17 +23,17 @@ const generateRandomString = () => {
 
 
 const randomString = () => {
-  let randomString = '';
-  while (randomString.length < 6) {
-    randomString += generateRandomString
+  let ranString = '';
+  while (ranString.length < 6) {
+    ranString += generateRandomString();
   }
-  return randomString;
+  return ranString;
 };
 
 
 
 //helper function: add user if not available
-const adduser = (newuser,userslist) => {
+const addUser = (newuser,userslist) => {
   const userid = generateRandomString();
   newuser.id = userid;
   userslist[newuser] = newuser;
@@ -53,11 +53,42 @@ const getUserByEmail = (email, userslist) => {
 const fetchUserInfo = (email, database) => {
   for (key in database) {
     if (database[key]['email'] === email) {
-      return database[key]
+      return database[key];
     }
   }
+};
+
+const currentUser = (cookie, users) => {
+  for (let user in users) {
+    if (cookie === users[user]['id']) {
+      return users[user]['email'];
+    }
+  }
+};
+
+const currentUserId = (cookie, users) => {
+  for (let user in users) {
+    if (cookie === users[user]['id']) {
+      return users[user]['id'];
+    }
+  }
+};
+
+const urlsForUser = (id, users) => {
+  let currentUserId = id;
+  let usersURLs = {};
+  for (let key in users) {
+    if (users[key].userID === currentUserId) {
+      usersURLs[key] = users[key];
+    }
+  }
+  return usersURLs;
+};
+
+const checkOwner = (userId, urlID, database) => {
+  console.log('this is shortURL', urlID)
+  return userId === database[urlID]['userID']
 }
 
 
-
-module.exports = { verifyShortUrl, randomString, getUserByEmail, adduser, fetchUserInfo }  
+module.exports = { verifyShortUrl, randomString, getUserByEmail, addUser, fetchUserInfo, currentUser, urlsForUser, currentUserId, checkOwner }  
