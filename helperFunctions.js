@@ -1,11 +1,7 @@
-//These are helper functions
-//this will show if short url exists
 const verifyShortUrl = (URL, database) => {
   return database[URL];
 };
 
-// this will generate a unique url, string random alphaNumeric values
-// index is betwen 0 and 61 as 62 is our alphaNumeric
 const generateRandomString = () => {
   const lowerCase = 'abcdefghijklmnopqrstuvwxyz';
   const upperCase = lowerCase.toUpperCase();
@@ -30,45 +26,41 @@ const randomString = () => {
   return ranString;
 };
 
-
-
-//helper function: add user if not available
 const addUser = (newuser,userslist) => {
   const userid = generateRandomString();
   newuser.id = userid;
   userslist[newuser] = newuser;
-  return newuser
-}
+  return newuser;
+};
 
-//helpfer function: to check if emails are registered
-const getUserByEmail = (email, userslist) => {
+const isUserValid = (email, userslist) => {
   for (let user in userslist) {
-    if(userslist[user]["email"] === email) {
+    if (userslist[user]["email"] === email) {
       return false;
     }
   }
   return true;
 };
 
-const fetchUserInfo = (email, database) => {
-  for (key in database) {
-    if (database[key]['email'] === email) {
-      return database[key];
+const getUserInfo = (email, users) => {
+  for (let key in users) {
+    if (users[key]['email'] === email) {
+      return users[key];
     }
   }
 };
 
-const currentUser = (cookie, users) => {
+const getUserEmail = (userId, users) => {
   for (let user in users) {
-    if (cookie === users[user]['id']) {
+    if (userId === users[user]['id']) {
       return users[user]['email'];
     }
   }
 };
 
-const currentUserId = (cookie, users) => {
+const getUserId = (userId, users) => {
   for (let user in users) {
-    if (cookie === users[user]['id']) {
+    if (userId === users[user]['id']) {
       return users[user]['id'];
     }
   }
@@ -86,9 +78,8 @@ const urlsForUser = (id, users) => {
 };
 
 const checkOwner = (userId, urlID, database) => {
-  console.log('this is shortURL', urlID)
-  return userId === database[urlID]['userID']
-}
+  return userId === database[urlID]['userID'];
+};
 
 
-module.exports = { verifyShortUrl, randomString, getUserByEmail, addUser, fetchUserInfo, currentUser, urlsForUser, currentUserId, checkOwner }  
+module.exports = { verifyShortUrl, randomString, isUserValid, addUser, getUserInfo, getUserEmail, urlsForUser, getUserId, checkOwner };
