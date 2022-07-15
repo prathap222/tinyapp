@@ -56,7 +56,7 @@ app.post('/register', (req, res) => {
     res.status(400).send('Email required');
   } else if (password === '') {
     res.status(400).send('Password required');
-  } else if (!isUserValid(email, users)) {
+  } else if (isUserValid(email, users)) {
     res.status(400).send('This email is already registered');
   } else {
     req.body['password'] = hashedPassword;

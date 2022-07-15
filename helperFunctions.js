@@ -36,10 +36,12 @@ const addUser = (newuser,userslist) => {
 const isUserValid = (email, userslist) => {
   for (let user in userslist) {
     if (userslist[user]["email"] === email) {
+      return true;
+    } else {
       return false;
     }
   }
-  return true;
+  
 };
 
 const getUserInfo = (email, users) => {
