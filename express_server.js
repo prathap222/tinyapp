@@ -24,15 +24,11 @@ const users = {
 };
 
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  res.send('<html><body> Hello! Welcome to Tiny app! Please <a href="/login"> login </a>to continue</body></html>\n');
 });
 
 app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
 });
 
 // endpoint for get register
@@ -60,7 +56,7 @@ app.post('/register', (req, res) => {
     res.status(400).send('This email is already registered');
   } else {
     req.body['password'] = hashedPassword;
-    let newUser = addUser(req.body, users);
+    const newUser = addUser(req.body, users);
     req.session.userSession = newUser.id;
     res.redirect('/urls');
   }
@@ -97,7 +93,7 @@ app.post('/login', (req, res) => {
 
 //endpoint to logout
 app.post('/logout',(req,res) => {
-  req.session.userSession = null;
+  req.session = null;
   res.redirect('/login');
 });
 
@@ -106,7 +102,7 @@ app.get('/urls', (req, res) => {
   let currentUser = getUserEmail(req.session.userSession, users);
   let userId = getUserId(req.session.userSession, users);
   if (!currentUser) {
-    res.redirect('/register');
+    res.send('<html><body>Please <a href="/login"> login </a>to continue</body></html>\n');
   }
   let userLinks = urlsForUser(userId, urlDatabase);
   let templateVars = { urls: userLinks, currentUser: getUserEmail(req.session.userSession, users) };
@@ -117,7 +113,7 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   let currentUser = getUserEmail(req.session.userSession, users);
   if (!currentUser) {
-    res.redirect('/login');
+    res.send('<html><body>Please <a href="/login"> login </a>to continue</body></html>\n');
   } else {
     let userId = getUserId(req.session.userSession, users);
     let shortURL = randomString();

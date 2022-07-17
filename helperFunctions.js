@@ -37,11 +37,9 @@ const isUserValid = (email, userslist) => {
   for (let user in userslist) {
     if (userslist[user]["email"] === email) {
       return true;
-    } else {
-      return false;
     }
   }
-  
+  return false;
 };
 
 const getUserInfo = (email, users) => {
