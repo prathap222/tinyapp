@@ -179,9 +179,11 @@ app.post('/urls/:shortURL/delete',(req,res) => {
   let shortURL = req.params.shortURL;
   if (!checkOwner(currentUser, req.params.shortURL, urlDatabase)) {
     res.send('This url does not belong to you');
+  } else {
+    delete urlDatabase[shortURL];
+    res.redirect('/urls');
   }
-  delete urlDatabase[shortURL];
-  res.redirect('/urls');
+
 });
 
 app.listen(PORT, () => {

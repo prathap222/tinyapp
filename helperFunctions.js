@@ -27,9 +27,10 @@ const randomString = () => {
 };
 
 const addUser = (newuser,userslist) => {
-  const userid = generateRandomString();
+  const userid = randomString();
   newuser.id = userid;
-  userslist[newuser] = newuser;
+  userslist[newuser.id] = newuser;
+  console.log(userslist);
   return newuser;
 };
 
