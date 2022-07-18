@@ -30,7 +30,6 @@ const addUser = (newuser,userslist) => {
   const userid = randomString();
   newuser.id = userid;
   userslist[newuser.id] = newuser;
-  console.log(userslist);
   return newuser;
 };
 
