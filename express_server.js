@@ -24,11 +24,12 @@ const users = {
 };
 
 app.get('/', (req, res) => {
-  res.send('<html><body> Hello! Welcome to Tiny app! Please <a href="/login"> login </a>to continue</body></html>\n');
-});
-
-app.get('/urls.json', (req, res) => {
-  res.json(urlDatabase);
+  let currentUser = getUserEmail(req.session.userSession, users);
+  if (currentUser) {
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 // endpoint for get register
@@ -102,7 +103,8 @@ app.get('/urls', (req, res) => {
   let currentUser = getUserEmail(req.session.userSession, users);
   let userId = getUserId(req.session.userSession, users);
   if (!currentUser) {
-    res.send('<html><body>Please <a href="/login"> login </a>to continue</body></html>\n');
+    const templateVars = {currentUser, error: 'unauthorised user'};
+    res.status(401).render('urls_nav', templateVars);
   }
   let userLinks = urlsForUser(userId, urlDatabase);
   let templateVars = { urls: userLinks, currentUser: getUserEmail(req.session.userSession, users) };
@@ -113,31 +115,14 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   let currentUser = getUserEmail(req.session.userSession, users);
   if (!currentUser) {
-    res.send('<html><body>Please <a href="/login"> login </a>to continue</body></html>\n');
+    const templateVars = {currentUser, error: 'unauthorised user'};
+    res.status(401).render('urls_nav', templateVars);
   } else {
     let userId = getUserId(req.session.userSession, users);
     let shortURL = randomString();
     let newURL = req.body.longURL;
     urlDatabase[shortURL] = { longURL: newURL, userID: userId };
     res.redirect(`/urls/${shortURL}`);
-  }
-});
-
-// url is shown in new page
-app.get('/urls/:shortURL', (req, res) => {
-  let shortURL = req.params.shortURL;
-  let templateVars = { currentUser: getUserEmail(req.session.userSession, users) };
-  let currentUserId = getUserId(req.session.userSession, users);
-  if (verifyShortUrl(shortURL, urlDatabase)) {
-    if (currentUserId !== urlDatabase[shortURL].userID) {
-      res.send('This url does not belong to you');
-    } else {
-      let longURL = urlDatabase[req.params.shortURL].longURL;
-      let templateVars1 = { shortURL: shortURL, longURL: longURL, currentUser: getUserEmail(req.session.userSession, users)};
-      res.render('urls_show', templateVars1);
-    }
-  } else {
-    res.render('urls_new', templateVars);
   }
 });
 
@@ -149,6 +134,22 @@ app.get('/urls/new', (req, res) => {
   } else {
     let templateVars = { currentUser: currentUser };
     res.render('urls_new', templateVars);
+  }
+});
+
+// url is shown in new page
+app.get('/urls/:shortURL', (req, res) => {
+  const shortURL = req.params.shortURL;
+  const currentUserId = getUserId(req.session.userSession, users);
+  const currentUser = getUserEmail(req.session.userSession, users);
+  if (!urlDatabase[shortURL]) {
+    res.status(404).send('The requested URL not found');
+  } else if (!currentUser || (currentUserId !== urlDatabase[shortURL].userID)) {
+    res.status(404).send('This url does not belong to you');
+  } else {
+    const longURL = urlDatabase[req.params.shortURL].longURL;
+    const templateVars = { shortURL: shortURL, longURL: longURL, currentUser: currentUser, urlDatabase, user: currentUserId};
+    res.render('urls_show', templateVars)
   }
 });
 
